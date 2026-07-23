@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="TalentPilot AI">
+  <defs>
+    <linearGradient id="tp-flare" x1="18" y1="96" x2="110" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="48%" stop-color="#A855F7"/>
+      <stop offset="100%" stop-color="#F97316"/>
+    </linearGradient>
+    <linearGradient id="tp-sheen" x1="64" y1="20" x2="64" y2="108" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle mark -->
+  <rect width="128" height="128" rx="30" fill="#1A1033"/>
+
+  <!-- Soft glow -->
+  <circle cx="64" cy="70" r="42" fill="#7C3AED" opacity="0.18"/>
+
+  <!-- Pilot / ascent chevron -->
+  <path
+    fill="url(#tp-flare)"
+    d="M64 18
+       C67 18 70 19.5 72 22.5
+       L108 82
+       C110.5 86.2 107.5 92 102.5 92
+       H81
+       L70.5 74.5
+       C68.2 70.6 59.8 70.6 57.5 74.5
+       L47 92
+       H25.5
+       C20.5 92 17.5 86.2 20 82
+       L56 22.5
+       C58 19.5 61 18 64 18Z"
+  />
+
+  <!-- Fold highlight -->
+  <path
+    fill="url(#tp-sheen)"
+    d="M64 22 L78 86 H64 Z"
+    opacity="0.55"
+  />
+
+  <!-- Talent silhouette cutout -->
+  <circle cx="64" cy="48" r="8.5" fill="#1A1033"/>
+  <path
+    fill="#1A1033"
+    d="M46.5 72.5
+       C48.5 62.5 55.5 57 64 57
+       C72.5 57 79.5 62.5 81.5 72.5
+       C82 74.8 80.2 77 77.8 77
+       H50.2
+       C47.8 77 46 74.8 46.5 72.5Z"
+  />
+</svg>

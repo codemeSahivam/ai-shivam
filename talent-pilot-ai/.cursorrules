@@ -1,0 +1,53 @@
+# TalentPilot AI — Cursor Rules
+
+You are working on **TalentPilot AI**. Read and follow **[AGENTS.md](AGENTS.md)** for full agent guidance. First-time setup: **[SETUP.md](SETUP.md)**. Keep AGENTS.md, SETUP.md, README.md, and this file updated when conventions or setup steps change.
+
+## Stack locks
+
+- Backend: Python 3.11+/3.12, FastAPI, Pydantic v2, SQLAlchemy, Google Gemini, PyMuPDF, python-docx
+- Frontend: Vanilla JS (ES modules) + CSS variables — **no React/Next/Vue/Angular**
+- UI themes: light + dark (`data-theme`), purple/orange brand accents
+- Local run: `make run`; containers: `make docker-up`
+
+## Architecture
+
+```text
+api (thin) → application (use cases) → infrastructure (db / gemini / parser)
+                ↘ domain (exceptions, enums)
+middleware (request-id, security headers, rate-limit)
+```
+
+- Never put business logic in routes
+- Inject via FastAPI `Depends` (`app/api/deps.py`) or constructors
+- Persistence only through repositories
+- LLM behind `LLMClient`; Gemini in `infrastructure/gemini/`
+
+## Naming
+
+- Classes / exceptions: PascalCase
+- Functions / variables / modules: snake_case
+- Constants: UPPER_SNAKE_CASE
+- Booleans: `is_`, `has_`, `can_`
+
+## Quality bar
+
+- Type-hint public functions
+- No `print()` — use structured logging
+- No bare `except`
+- Domain errors from `app.domain.exceptions`
+- Validate uploads (stream size, extension, magic bytes)
+- Never commit `.env`, `creds/`, or `*.db`
+- Tests for every public behavior change (`make test` / `make cov`)
+- Update `docs/CHANGELOG.md` and AGENTS.md when architecture or agent rules change
+
+## Frontend & theme
+
+- Structure: `frontend/js/{config,components,services,utils,pages}`
+- Themes: `frontend/css/styles.css` + `utils/theme.js` + `theme-boot.js`
+- Always update **both** light and dark tokens when changing UI colors
+- Prefer `textContent` / `utils/dom.js` — avoid unsafe `innerHTML`
+- No inline app JavaScript in HTML
+
+## Commands
+
+- `make run`, `make test`, `make cov`, `make docker-up`, `make docker-down`

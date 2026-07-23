@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TalentPilot AI — Resume Reviewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: "#0f172a",
+              mist: "#e2e8f0",
+              sea: "#0e7490",
+              seaDark: "#155e75",
+              sand: "#f8fafc",
+            },
+            fontFamily: {
+              display: ['"Source Serif 4"', "Georgia", "serif"],
+              sans: ['"DM Sans"', "system-ui", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body class="font-sans text-ink bg-sand min-h-screen">
+    <div class="page-shell min-h-screen">
+      <header class="px-6 pt-10 pb-4 max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <div>
+          <p class="font-display text-4xl sm:text-5xl tracking-tight text-ink">TalentPilot AI</p>
+          <p class="mt-2 text-slate-600 text-lg">AI Resume Reviewer</p>
+        </div>
+        <div id="auth-bar" class="text-sm text-slate-600 flex flex-wrap items-center gap-2">
+          <span id="auth-status">Not signed in</span>
+          <button id="auth-open-btn" type="button" class="underline text-sea">Sign in</button>
+          <button id="logout-btn" type="button" class="hidden underline text-sea">Sign out</button>
+        </div>
+      </header>
+
+      <main class="px-6 pb-16 max-w-5xl mx-auto grid lg:grid-cols-[1fr_280px] gap-10">
+        <div class="space-y-10">
+          <section aria-labelledby="upload-heading" class="space-y-6">
+            <h2 id="upload-heading" class="sr-only">Upload and analyze</h2>
+
+            <div class="flex flex-wrap gap-3">
+              <button
+                id="load-sample-btn"
+                type="button"
+                class="border border-mist px-4 py-2 text-sm hover:bg-white/70"
+              >
+                Load sample resume + JD
+              </button>
+            </div>
+
+            <form id="analyze-form" class="space-y-6">
+              <div>
+                <label for="resume" class="block text-sm font-medium text-slate-700 mb-2"
+                  >Upload Resume (PDF or DOCX)</label
+                >
+                <input
+                  id="resume"
+                  name="resume"
+                  type="file"
+                  accept="application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx"
+                  class="block w-full text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-sea file:text-white file:font-medium hover:file:bg-seaDark"
+                />
+                <p id="resume-name" class="mt-1 text-xs text-slate-500"></p>
+              </div>
+
+              <div>
+                <label for="job_description" class="block text-sm font-medium text-slate-700 mb-2"
+                  >Job Description</label
+                >
+                <textarea
+                  id="job_description"
+                  name="job_description"
+                  rows="8"
+                  maxlength="10000"
+                  required
+                  placeholder="Paste the job description here..."
+                  class="w-full rounded-none border border-mist bg-white px-3 py-3 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-sea/40"
+                ></textarea>
+                <p class="mt-1 text-xs text-slate-500"><span id="jd-count">0</span> / 10000</p>
+              </div>
+
+              <button
+                id="submit-btn"
+                type="submit"
+                class="inline-flex items-center justify-center bg-sea hover:bg-seaDark text-white font-medium px-6 py-3 transition disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                Analyze Resume
+              </button>
+            </form>
+
+            <div
+              id="status"
+              class="hidden rounded-none border px-4 py-3 text-sm"
+              role="status"
+              aria-live="polite"
+            ></div>
+          </section>
+
+          <section id="results" class="hidden space-y-8" aria-labelledby="results-heading">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <h2 id="results-heading" class="font-display text-2xl text-ink">Results</h2>
+              <div class="flex gap-2">
+                <button id="export-md-btn" type="button" class="border border-mist px-3 py-2 text-sm">
+                  Export Markdown
+                </button>
+                <button id="export-pdf-btn" type="button" class="border border-mist px-3 py-2 text-sm">
+                  Export PDF
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-xs uppercase tracking-wide text-slate-500">Overall Score</p>
+                <p id="match-score" class="font-display text-4xl text-sea mt-1">—</p>
+              </div>
+              <div>
+                <p class="text-xs uppercase tracking-wide text-slate-500">ATS Score</p>
+                <p id="ats-score" class="font-display text-4xl text-sea mt-1">—</p>
+              </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-8">
+              <div>
+                <p class="text-xs uppercase tracking-wide text-slate-500 mb-2">Match score breakdown</p>
+                <ul id="match-breakdown" class="list-disc list-inside space-y-1 text-slate-700"></ul>
+              </div>
+              <div>
+                <p class="text-xs uppercase tracking-wide text-slate-500 mb-2">ATS score breakdown</p>
+                <ul id="ats-breakdown" class="list-disc list-inside space-y-1 text-slate-700"></ul>
+              </div>
+            </div>
+
+            <div>
+              <p class="text-xs uppercase tracking-wide text-slate-500 mb-2">Recommendation</p>
+              <p id="recommendation" class="text-lg font-medium">—</p>
+            </div>
+
+            <div>
+              <p class="text-xs uppercase tracking-wide text-slate-500 mb-2">Summary</p>
+              <p id="summary" class="text-slate-700 leading-relaxed">—</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-8">
+              <div>
+                <p class="text-xs uppercase tracking-wide text-slate-500 mb-2">Matching Skills</p>
+                <ul id="matching-skills" class="list-disc list-inside space-y-1 text-slate-700"></ul>
+              </div>
+              <div>
+                <p class="text-xs uppercase tracking-wide text-slate-500 mb-2">Missing Skills</p>
+                <ul id="missing-skills" class="list-disc list-inside space-y-1 text-slate-700"></ul>
+              </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-8">
+              <div>
+                <p class="text-xs uppercase tracking-wide text-slate-500 mb-2">Strengths</p>
+                <ul id="strengths" class="list-disc list-inside space-y-1 text-slate-700"></ul>
+              </div>
+              <div>
+                <p class="text-xs uppercase tracking-wide text-slate-500 mb-2">Weaknesses</p>
+                <ul id="weaknesses" class="list-disc list-inside space-y-1 text-slate-700"></ul>
+              </div>
+            </div>
+
+            <div>
+              <p class="text-xs uppercase tracking-wide text-slate-500 mb-2">Suggestions</p>
+              <ul id="suggestions" class="list-disc list-inside space-y-1 text-slate-700"></ul>
+            </div>
+          </section>
+        </div>
+
+        <aside class="space-y-8">
+          <section>
+            <h3 class="text-xs uppercase tracking-wide text-slate-500 mb-3">This session</h3>
+            <div id="session-history" class="space-y-2"></div>
+          </section>
+          <section>
+            <h3 class="text-xs uppercase tracking-wide text-slate-500 mb-3">Saved account history</h3>
+            <p id="saved-history-hint" class="text-sm text-slate-500 mb-2">Sign in to save analyses.</p>
+            <div id="saved-history" class="space-y-2"></div>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <div
+      id="auth-modal"
+      class="hidden fixed inset-0 z-50 bg-ink/40 flex items-center justify-center p-4"
+    >
+      <div class="bg-sand border border-mist w-full max-w-md p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="font-display text-2xl">Account</h2>
+          <button id="auth-close-btn" type="button" class="text-slate-500">Close</button>
+        </div>
+        <div class="flex gap-2 text-sm">
+          <button id="tab-login" type="button" class="px-3 py-1 bg-sea text-white">Sign in</button>
+          <button id="tab-register" type="button" class="px-3 py-1 border border-mist">Register</button>
+        </div>
+        <form id="auth-form" class="space-y-3">
+          <input
+            id="auth-email"
+            type="email"
+            required
+            placeholder="Email"
+            class="w-full border border-mist px-3 py-2 text-sm bg-white"
+          />
+          <input
+            id="auth-password"
+            type="password"
+            required
+            minlength="8"
+            placeholder="Password (min 8 chars)"
+            class="w-full border border-mist px-3 py-2 text-sm bg-white"
+          />
+          <button type="submit" class="w-full bg-sea hover:bg-seaDark text-white py-2">Continue</button>
+        </form>
+        <p id="auth-error" class="text-sm text-red-700 hidden"></p>
+      </div>
+    </div>
+
+    <script type="module" src="/js/app.js"></script>
+  </body>
+</html>

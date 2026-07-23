@@ -1,0 +1,157 @@
+openapi: 3.0.3
+info:
+  title: TalentPilot AI — Stage 1 Resume Reviewer
+  version: 1.0.0
+  description: Analyze a PDF resume against a job description using Google Gemini.
+servers:
+  - url: http://localhost:8000
+    description: Local backend
+paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    example: ok
+  /api/v1/analyze:
+    post:
+      summary: Analyze resume against job description
+      operationId: analyzeResume
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [resume, job_description]
+              properties:
+                resume:
+                  type: string
+                  format: binary
+                  description: PDF resume file (max 10 MB)
+                job_description:
+                  type: string
+                  maxLength: 10000
+                  description: Job description text
+      responses:
+        "200":
+          description: Analysis succeeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzeSuccess"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzeError"
+        "500":
+          description: Invalid AI response or internal error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzeError"
+        "503":
+          description: Gemini unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzeError"
+components:
+  schemas:
+    Recommendation:
+      type: string
+      enum: [Strong Hire, Hire, Consider, Reject]
+    Analysis:
+      type: object
+      additionalProperties: false
+      required:
+        - match_score
+        - ats_score
+        - summary
+        - matching_skills
+        - missing_skills
+        - strengths
+        - weaknesses
+        - suggestions
+        - recommendation
+      properties:
+        match_score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        ats_score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        summary:
+          type: string
+        matching_skills:
+          type: array
+          items:
+            type: string
+        missing_skills:
+          type: array
+          items:
+            type: string
+        strengths:
+          type: array
+          items:
+            type: string
+        weaknesses:
+          type: array
+          items:
+            type: string
+        suggestions:
+          type: array
+          items:
+            type: string
+        recommendation:
+          $ref: "#/components/schemas/Recommendation"
+    AnalyzeSuccess:
+      type: object
+      required: [success, analysis]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        analysis:
+          $ref: "#/components/schemas/Analysis"
+    ErrorBody:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          enum:
+            - INVALID_FILE
+            - EMPTY_FILE
+            - FILE_TOO_LARGE
+            - EMPTY_RESUME
+            - MISSING_JOB_DESCRIPTION
+            - JOB_DESCRIPTION_TOO_LONG
+            - GEMINI_UNAVAILABLE
+            - INVALID_AI_RESPONSE
+            - INTERNAL_ERROR
+        message:
+          type: string
+    AnalyzeError:
+      type: object
+      required: [success, error]
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        error:
+          $ref: "#/components/schemas/ErrorBody"

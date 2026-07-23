@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://talentpilot.ai/schemas/stage1-analysis.json",
+  "title": "ResumeAnalysis",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "match_score",
+    "ats_score",
+    "match_score_breakdown",
+    "ats_score_breakdown",
+    "summary",
+    "matching_skills",
+    "missing_skills",
+    "strengths",
+    "weaknesses",
+    "suggestions",
+    "recommendation"
+  ],
+  "properties": {
+    "match_score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "ats_score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "match_score_breakdown": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "ats_score_breakdown": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "matching_skills": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "missing_skills": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "strengths": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "weaknesses": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "suggestions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "recommendation": {
+      "type": "string",
+      "enum": ["Strong Hire", "Hire", "Consider", "Reject"]
+    }
+  }
+}

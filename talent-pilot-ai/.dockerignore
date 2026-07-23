@@ -1,0 +1,11 @@
+.dockerignore
+.git
+.venv
+backend/.venv
+backend/data
+**/__pycache__
+**/.pytest_cache
+.env
+creds
+*.md
+!README.md

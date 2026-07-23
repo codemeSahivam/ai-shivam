@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>TalentPilot AI — Resume Reviewer</title>
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/assets/logo.svg" type="image/svg+xml" />
+    <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180" />
+    <meta name="theme-color" content="#1A1033" />
+    <script src="/js/theme-boot.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <div class="float-orb a" aria-hidden="true"></div>
+      <div class="float-orb b" aria-hidden="true"></div>
+      <div class="float-orb c" aria-hidden="true"></div>
+
+      <div class="container">
+        <header class="topbar">
+          <a class="brand-lockup" href="#workspace" aria-label="TalentPilot AI home">
+            <img
+              class="brand-logo"
+              src="/assets/logo.svg"
+              alt=""
+              width="44"
+              height="44"
+            />
+            <div>
+              <h1 class="brand">TalentPilot <span class="brand-ai">AI</span></h1>
+              <p class="subtitle">Mission control for resume ↔ role fit</p>
+            </div>
+          </a>
+          <div class="header-actions" id="auth-bar">
+            <button id="theme-toggle" type="button" class="theme-toggle" aria-label="Toggle color theme">
+              <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+              </svg>
+              <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M21 14.5A8.5 8.5 0 1 1 9.5 3a7 7 0 0 0 11.5 11.5z" />
+              </svg>
+              <span id="theme-label">Light</span>
+            </button>
+            <span id="auth-status" class="muted">Not signed in</span>
+            <button id="auth-open-btn" type="button" class="btn-ghost">Sign in</button>
+            <button id="logout-btn" type="button" class="btn-ghost hidden">Sign out</button>
+          </div>
+        </header>
+
+        <section class="bento" aria-label="Product highlight">
+          <article class="tile tile-hero">
+            <span class="kicker">Live · Gemini-powered</span>
+            <h2 class="hero-title">See the hire before you <em>hire</em></h2>
+            <p class="hero-copy">
+              Drop a resume, paste a role, and watch fit scores, skill gaps, and rewrite ideas
+              assemble into a clear hiring brief — light or dark, same sharp story.
+            </p>
+            <div class="hero-actions">
+              <a class="btn" href="#workspace">Start analysis</a>
+              <button id="load-sample-btn" type="button" class="btn-secondary">Try sample pack</button>
+            </div>
+          </article>
+
+          <article class="tile tile-art">
+            <div class="tile-art-stage">
+              <img
+                src="/assets/hero-illustration.png"
+                alt="TalentPilot: resume analysis with match score, ATS score, and hiring recommendation"
+                width="875"
+                height="592"
+              />
+            </div>
+          </article>
+
+          <article class="tile tile-stat a">
+            <p class="stat-label">Match clarity</p>
+            <p class="stat-value">0–100</p>
+            <p class="stat-note">Overall fit scored against the JD you paste.</p>
+          </article>
+
+          <article class="tile tile-stat b">
+            <p class="stat-label">ATS lens</p>
+            <p class="stat-value">Parsed</p>
+            <p class="stat-note">Structure, keywords, and scanner-friendly signals.</p>
+          </article>
+        </section>
+
+        <main id="workspace" class="workspace">
+          <div class="stack">
+            <section class="panel">
+              <div class="panel-head">
+                <h2 class="section-title">Analysis board</h2>
+              </div>
+              <div class="step-rail" aria-hidden="true">
+                <span class="step-pill"><span class="n">1</span> Resume</span>
+                <span class="step-pill"><span class="n">2</span> Job description</span>
+                <span class="step-pill"><span class="n">3</span> Insights</span>
+              </div>
+
+              <form id="analyze-form" class="stack">
+                <div>
+                  <label class="label" for="resume">Upload resume (PDF or DOCX)</label>
+                  <div id="file-drop" class="file-drop">
+                    <strong>Drop file here</strong>
+                    <span>or click to browse</span>
+                    <input
+                      id="resume"
+                      name="resume"
+                      type="file"
+                      accept="application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx"
+                    />
+                  </div>
+                  <p id="resume-name" class="muted"></p>
+                </div>
+                <div>
+                  <label class="label" for="job_description">Job description</label>
+                  <textarea
+                    id="job_description"
+                    class="textarea"
+                    name="job_description"
+                    maxlength="10000"
+                    required
+                    placeholder="Paste the role requirements, must-haves, and nice-to-haves…"
+                  ></textarea>
+                  <p class="muted"><span id="jd-count">0</span> / 10000</p>
+                </div>
+                <button id="submit-btn" class="btn" type="submit">Analyze resume</button>
+              </form>
+              <div id="status" class="hidden" role="status" aria-live="polite"></div>
+            </section>
+          </div>
+
+          <aside class="aside">
+            <section class="panel">
+              <h3>This session</h3>
+              <div id="session-history" class="stack"></div>
+            </section>
+            <section class="panel">
+              <h3>Saved account history</h3>
+              <p id="saved-history-hint" class="muted">Sign in to save analyses.</p>
+              <div id="saved-history" class="stack"></div>
+            </section>
+          </aside>
+
+          <section id="results" class="panel results-panel hidden">
+            <div class="panel-head">
+              <div>
+                <p class="results-eyebrow">Analysis complete</p>
+                <h2 class="section-title">Results</h2>
+              </div>
+              <div class="row">
+                <button id="export-md-btn" type="button" class="pill-btn">Export Markdown</button>
+                <button id="export-pdf-btn" type="button" class="pill-btn">Export PDF</button>
+              </div>
+            </div>
+
+            <div class="results-hero">
+              <div class="meter">
+                <div id="match-ring" class="meter-ring" style="--p: 0">
+                  <span id="match-score" class="meter-value">—</span>
+                </div>
+                <p class="meter-label">Match score</p>
+              </div>
+              <div class="meter">
+                <div id="ats-ring" class="meter-ring meter-accent" style="--p: 0">
+                  <span id="ats-score" class="meter-value">—</span>
+                </div>
+                <p class="meter-label">ATS score</p>
+              </div>
+              <div id="reco-banner" class="reco-card reco-consider">
+                <p class="meter-label">Recommendation</p>
+                <strong id="recommendation">—</strong>
+                <p class="reco-hint">Hiring signal based on fit vs role</p>
+              </div>
+            </div>
+
+            <article class="results-section">
+              <h3 class="results-block-title">Summary</h3>
+              <p id="summary" class="summary-copy">—</p>
+            </article>
+
+            <div class="results-columns">
+              <article class="results-section">
+                <h3 class="results-block-title">Match breakdown</h3>
+                <ul id="match-breakdown" class="clean-list"></ul>
+              </article>
+              <article class="results-section">
+                <h3 class="results-block-title">ATS breakdown</h3>
+                <ul id="ats-breakdown" class="clean-list"></ul>
+              </article>
+            </div>
+
+            <article class="results-section">
+              <h3 class="results-block-title">Skills</h3>
+              <div class="skills-stack">
+                <div>
+                  <h4 class="subhead subhead-good">Matching</h4>
+                  <div id="matching-skills" class="chip-row"></div>
+                </div>
+                <div>
+                  <h4 class="subhead subhead-warn">Missing</h4>
+                  <div id="missing-skills" class="chip-row"></div>
+                </div>
+              </div>
+            </article>
+
+            <div class="results-columns">
+              <article class="results-section tone-good">
+                <h3 class="results-block-title">Strengths</h3>
+                <ul id="strengths" class="clean-list"></ul>
+              </article>
+              <article class="results-section tone-warn">
+                <h3 class="results-block-title">Weaknesses</h3>
+                <ul id="weaknesses" class="clean-list"></ul>
+              </article>
+            </div>
+
+            <article class="results-section">
+              <h3 class="results-block-title">Action plan</h3>
+              <ol id="suggestions" class="step-list"></ol>
+            </article>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div id="auth-modal" class="modal hidden">
+      <div class="modal-card stack">
+        <div class="row" style="justify-content: space-between">
+          <div class="brand-lockup" style="gap: 0.65rem">
+            <img class="brand-logo" src="/assets/logo.svg" alt="" width="36" height="36" style="width: 2.25rem; height: 2.25rem" />
+            <h2 class="section-title" style="margin: 0">Account</h2>
+          </div>
+          <button id="auth-close-btn" type="button" class="btn-ghost">Close</button>
+        </div>
+        <div class="tabs">
+          <button id="tab-login" type="button" class="tab active">Sign in</button>
+          <button id="tab-register" type="button" class="tab">Register</button>
+        </div>
+        <form id="auth-form" class="stack">
+          <input id="auth-email" class="input" type="email" required placeholder="Email" />
+          <input
+            id="auth-password"
+            class="input"
+            type="password"
+            required
+            minlength="8"
+            placeholder="Password (min 8 chars)"
+          />
+          <button type="submit" class="btn">Continue</button>
+        </form>
+        <p id="auth-error" class="auth-error hidden"></p>
+      </div>
+    </div>
+
+    <script type="module" src="/js/app.js"></script>
+  </body>
+</html>
